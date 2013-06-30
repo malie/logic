@@ -29,25 +29,27 @@ It uses very similar techniques DPLL solvers use:
 
 one-of-three written in CNF as
 
-  (a or b or c)
-    and (not a or not b)
-    and (not a or not c)
-    and (not b or not c)
+    (a or b or c)
+      and (not a or not b)
+      and (not a or not c)
+      and (not b or not c)
 
 is encoded as
 
- ((1 2 3) (-1 -2) (-1 -3) (-2 -3))
+    ((1 2 3) (-1 -2) (-1 -3) (-2 -3))
 
 and converted to d-DNNF by
 
-CL-USER> (cnf-to-ddnnf '((1 2 3) (-1 -2) (-1 -3) (-2 -3)))
-(OR (AND 2 -1 -3) (AND -2 (OR (AND 1 -3) (AND -1 3))))
+    CL-USER> (cnf-to-ddnnf '((1 2 3) (-1 -2) (-1 -3) (-2 -3)))
+
+    (OR (AND 2 -1 -3) (AND -2 (OR (AND 1 -3) (AND -1 3))))
 
 ## another example
 
-CL-USER> (cnf-to-ddnnf '((1 2 3) (-3 4 5)))
-(OR (AND 3 (ND-OR 4 5) (INDEPENDENT 1 2))
-    (AND -3 (ND-OR 1 2) (INDEPENDENT 4 5)))
+    CL-USER> (cnf-to-ddnnf '((1 2 3) (-3 4 5)))
+
+    (OR (AND 3 (ND-OR 4 5) (INDEPENDENT 1 2))
+        (AND -3 (ND-OR 1 2) (INDEPENDENT 4 5)))
 
 ## output format
 
@@ -63,8 +65,8 @@ CL-USER> (cnf-to-ddnnf '((1 2 3) (-3 4 5)))
 
 Code should load in any Common Lisp environment, use
 
-(load "dpll.lisp")
-(load "ddnnf.lisp")
+    (load "dpll.lisp")
+    (load "ddnnf.lisp")
 
 
 ## todos
