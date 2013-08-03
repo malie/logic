@@ -176,3 +176,46 @@
   (progn (setq *t (random-cnf 70 304 50 3 3))
          (list *t '===> (time (cnf-to-ddnnf *t))))
   )
+
+
+;; this function compiles an incompletely specified sudoku to all solutions
+(defun compile-game (givens)
+  (let* ((gvs (sudoku-game givens))
+         (_ (print `(givens ,gvs)))
+         (cnf0 (append (sudoku) gvs))
+         (cnf (unique-cnf cnf0)))
+    (time (cnf-to-ddnnf cnf))))
+
+(defun pretty-compiled-sudoku (d)
+  (cond ((consp d)
+         (cons (car d)
+               (mapcar #'pretty-compiled-sudoku
+                       (remove-if #'(lambda (x) (and (numberp x) (< x 0)))
+                                  (cdr d)))))
+        ((numberp d)
+         (multiple-value-bind (column line digit) (sudoku-coords d)
+           (format nil "~c~c=~c"
+                   (digit-char (+ column 10) 36)
+                   (digit-char line)
+                   (digit-char (+ 1 digit)))))))
+
+(defun count-number-of-solutions (d)
+  (cond ((consp d)
+         (case (car d)
+           (or (apply #'+ (mapcar #'count-number-of-solutions (cdr d))))
+           (and (apply #'* (mapcar #'count-number-of-solutions (cdr d))))))
+        ((integerp d)
+         1)))
+
+
+(defun compile-some-game ()
+  (compile-game
+   '(_ _ _ _ _ 5 3 _ 7
+     _ 9 2 1 4 _ _ _ _
+     _ _ _ 8 _ _ _ _ _
+     _ _ _ _ 7 _ 5 _ 1
+     _ 4 _ _ _ _ _ 7 _
+     5 _ 6 _ 8 _ _ _ _
+     _ _ _ _ _ 6 _ _ _
+     _ _ _ _ 3 9 2 5 _
+     2 _ 9 4 _ _ _ _ 3)))
